@@ -12,13 +12,18 @@ class Board
     @state = create_board(rows, columns)
   end
 
+  def at(row, column)
+    validate_row(row)
+    validate_column(column)
+
+    @state[row][column]
+  end
+
   def drop_disc(column, disc)
-    validate_drop_column(column)
-
     row = 0
+    last_row = @rows - 1
 
-    # TODO: Get a helper method to fetch disc by row/col and get rid of this
-    row += 1 while row < @rows - 1 && @state[row + 1][column].nil?
+    row += 1 while row < last_row && at(row + 1, column).nil?
 
     @state[row][column] = disc
   end
@@ -35,7 +40,11 @@ class Board
     raise BoardException, 'invalid dimension' unless dimension.positive?
   end
 
-  def validate_drop_column(column)
+  def validate_column(column)
     raise BoardException, 'out of bounds column' unless column.between?(0, @columns - 1)
+  end
+
+  def validate_row(row)
+    raise BoardException, 'out of bounds row' unless row.between?(0, @rows - 1)
   end
 end

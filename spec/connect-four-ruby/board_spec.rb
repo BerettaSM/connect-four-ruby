@@ -32,6 +32,45 @@ RSpec.describe Board do
     end
   end
 
+  context '#at' do
+    subject do
+      s = described_class.new(3, 3)
+      s.instance_variable_set(:@state, [
+                                ['y', nil, nil],
+                                [nil, 'x', nil],
+                                ['y', nil, nil]
+                              ])
+      s
+    end
+
+    it 'should be callable' do
+      expect(subject).to respond_to(:at).with(2).arguments
+    end
+
+    it 'should return a disc when given a populated slot coords by player 1' do
+      expect(subject.at(0, 0)).to eq 'y'
+    end
+
+    it 'should return a disc when given a populated slot coords by player 2' do
+      expect(subject.at(1, 1)).to eq 'x'
+    end
+
+    it 'should return nil when given an unpopulated slot coords' do
+      expect(subject.at(2, 2)).to be_nil
+    end
+
+    it 'should raise BoardException when given out of bounds coords' do
+      invalid_coords = [
+        [-1, 0], [1, -1],
+        [3, 0], [2, 3]
+      ]
+
+      invalid_coords.each do |row, col|
+        expect { subject.at(row, col) }.to raise_error BoardException
+      end
+    end
+  end
+
   context '#state' do
     it 'should be callable' do
       expect(subject).to respond_to :state
@@ -64,8 +103,7 @@ RSpec.describe Board do
       it 'should drop the disc in the last row' do
         subject.drop_disc(column, disc)
 
-        # TODO: Get a helper method to fetch disc by row/col and get rid of this
-        expect(subject.state.dig(subject.rows - 1, 0)).to eq disc
+        expect(subject.at(subject.rows - 1, 0)).to eq disc
       end
     end
 
@@ -83,8 +121,7 @@ RSpec.describe Board do
       it 'should not overwrite the existing disc' do
         subject.drop_disc(column, disc)
 
-        # TODO: Get a helper method to fetch disc by row/col and get rid of this
-        expect(subject.state.dig(subject.rows - 1, 0)).not_to eq disc
+        expect(subject.at(subject.rows - 1, 0)).not_to eq disc
       end
     end
   end
