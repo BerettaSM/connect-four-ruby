@@ -5,10 +5,9 @@ class BoardException < StandardError; end
 class Board
   attr_reader :state, :rows, :columns
 
-  def initialize(rows = 6, columns = 7, win_condition: 4)
+  def initialize(rows = 6, columns = 7)
     @rows = rows
     @columns = columns
-    @win_condition = win_condition
     @state = create_board(rows, columns)
   end
 
