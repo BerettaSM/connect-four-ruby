@@ -20,6 +20,10 @@ class Board
   end
 
   def drop_disc(column, disc)
+    uniq = uniq_discs
+
+    raise BoardException unless uniq.count < 2 || uniq.include?(disc)
+
     row = 0
     last_row = @rows - 1
 
@@ -46,5 +50,9 @@ class Board
 
   def validate_row(row)
     raise BoardException, 'out of bounds row' unless row.between?(0, @rows - 1)
+  end
+
+  def uniq_discs
+    @state.flatten.compact.uniq
   end
 end

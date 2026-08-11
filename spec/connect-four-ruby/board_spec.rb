@@ -2,6 +2,8 @@
 
 require_relative '../../lib/connect-four-ruby/board'
 
+RSpec::Matchers.define_negated_matcher :not_change, :change
+
 RSpec.describe Board do
   context '#initialize' do
     let(:rows) { 5 }
@@ -122,6 +124,27 @@ RSpec.describe Board do
         subject.drop_disc(column, disc)
 
         expect(subject.at(subject.rows - 1, 0)).not_to eq disc
+      end
+    end
+
+    context 'when called with a third type of disc' do
+      let(:disc_p1) { 'x' }
+      let(:disc_p2) { 'y' }
+      let(:invalid_disc) { 'z' }
+
+      it 'should raise BoardException' do
+        subject.drop_disc(column, disc_p1)
+        subject.drop_disc(column, disc_p2)
+
+        expect { subject.drop_disc(column, invalid_disc) }.to raise_error BoardException
+      end
+
+      it 'should not modify the board state' do
+        subject.drop_disc(column, disc_p1)
+        subject.drop_disc(column, disc_p2)
+
+        expect { subject.drop_disc(column, invalid_disc) }.to raise_error(BoardException)
+                                                          .and(not_change { subject.at(subject.rows - 3, column) })
       end
     end
   end
