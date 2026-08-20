@@ -107,6 +107,10 @@ RSpec.describe Board do
 
         expect(subject.at(subject.rows - 1, 0)).to eq disc
       end
+
+      it 'should return the last row and input column' do
+        expect(subject.drop_disc(column, disc)).to eq [subject.rows - 1, column]
+      end
     end
 
     context 'when called on a column with one disc' do
@@ -123,7 +127,40 @@ RSpec.describe Board do
       it 'should not overwrite the existing disc' do
         subject.drop_disc(column, disc)
 
-        expect(subject.at(subject.rows - 1, 0)).not_to eq disc
+        expect(subject.at(2, 0)).not_to eq disc
+      end
+
+      it 'should be placed above the existing disc' do
+        subject.drop_disc(column, disc)
+
+        expect(subject.at(1, 0)).to eq disc
+      end
+
+      it 'should return the next to last row and input column' do
+        expect(subject.drop_disc(column, disc)).to eq [subject.rows - 2, column]
+      end
+    end
+
+    context 'when called on a full column' do
+      subject do
+        s = described_class.new(3, 3)
+        s.instance_variable_set(:@state, [
+                                  ['y', nil, nil],
+                                  ['y', nil, nil],
+                                  ['y', nil, nil]
+                                ])
+        s
+      end
+
+      it 'should not overwrite any discs' do
+        expect { subject.drop_disc(column, disc) }.to(raise_error(BoardException)
+                                                  .and(not_change { subject.at(0, 0) }
+                                                  .and(not_change { subject.at(1, 0) }
+                                                  .and(not_change { subject.at(2, 0) }))))
+      end
+
+      it 'should raise BoardException' do
+        expect { subject.drop_disc(column, disc) }.to raise_error BoardException
       end
     end
 
