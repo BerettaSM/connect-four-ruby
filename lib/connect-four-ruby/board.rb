@@ -35,6 +35,10 @@ class Board
     [row, column]
   end
 
+  def filled?
+    @state.first.compact.count == @columns
+  end
+
   private
 
   def create_board(rows, columns)

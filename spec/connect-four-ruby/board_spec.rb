@@ -185,4 +185,26 @@ RSpec.describe Board do
       end
     end
   end
+
+  context '#filled?' do
+    subject do
+      s = described_class.new(3, 3)
+      s.instance_variable_set(:@state, [
+                                ['y', 'y', nil],
+                                ['x', 'x', 'y'],
+                                ['y', 'x', 'y']
+                              ])
+      s
+    end
+
+    it 'should return false if there are empty spaces' do
+      expect(subject).to_not be_filled
+    end
+
+    it 'should return true if board has no more empty spaces' do
+      subject.drop_disc(2, 'x')
+
+      expect(subject).to be_filled
+    end
+  end
 end
